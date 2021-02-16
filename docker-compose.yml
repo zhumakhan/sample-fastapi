@@ -1,0 +1,33 @@
+version: '3'
+
+services:
+
+  postgres:
+    container_name: postgres
+    image: postgres:12.0-alpine
+    logging:
+      driver: none
+    #volumes:
+    #  - ./postgres:/var/lib/postgresql/data:rw
+    #ports:
+    #  - 5432:5432
+    environment:
+      POSTGRES_DB: db
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+  
+  fastapi:
+#    restart: always
+    container_name: fastapi
+    build: ./
+    environment:
+      MODE: DEV
+    entrypoint: 'uvicorn main:app --reload'
+    volumes:
+      - ./src:/src
+      - ./.env:/src/.env
+    depends_on:
+      - postgres
+    ports:
+      - "8000:8000"
+
